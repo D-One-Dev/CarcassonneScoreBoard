@@ -10,16 +10,21 @@ public class GameController : MonoBehaviour
     public GameObject[] posRed, posGreen, posBlue, posYellow, posPink, posBlack;
     public GameObject exitConfirm;
     public Sprite[] meeples;
+    public Sprite[] messengersMessages;
     public GameObject gameEnd;
     public TMP_Text endText, endScore;
     public Image endSprite;
     public GameObject endConfirm;
-    private bool goldminesDLC;
+    public GameObject theMessengers;
+    private bool messengersDLC;
+    public Image messengersSprite;
+    public Image messengersMessage;
+    private int currentMessage = 0;
     void Start()
     {
         string save = PlayerPrefs.GetString("Players", "111111");
-        if (PlayerPrefs.GetInt("goldminesDLC", 0) == 0) goldminesDLC = false;
-        else goldminesDLC = true;
+        if (PlayerPrefs.GetInt("messengersDLC", 0) == 0) messengersDLC = false;
+        else messengersDLC = true;
 
 
         for (int i = 0; i < save.Length; i++)
@@ -35,6 +40,7 @@ public class GameController : MonoBehaviour
             else players[cnt].isActive = false;
             cnt++;
         }
+        CreateNewDeck();
         ResetPlayersScore();
         UpdateField();
     }
@@ -128,9 +134,10 @@ public class GameController : MonoBehaviour
     public void SetPlayerScore(int playerID, int score)
     {
         players[playerID].score += score;
-        if (players[playerID].score % 5 == 0 && goldminesDLC)
+        if (players[playerID].score % 5 == 0 && messengersDLC)
         {
             Debug.LogFormat("Trigger " + playerID.ToString());
+            TheMessengersTrigger(playerID);
         }
         UpdateField();
     }
@@ -206,5 +213,31 @@ public class GameController : MonoBehaviour
     public void DiscardEnd()
     {
         endConfirm.SetActive(false);
+    }
+
+    private void TheMessengersTrigger(int playerID)
+    {
+        messengersSprite.sprite = meeples[playerID];
+        messengersMessage.sprite = messengersMessages[currentMessage];
+        if (currentMessage < messengersMessages.Length - 1) currentMessage++;
+        else currentMessage = 0;
+        theMessengers.SetActive(true);
+    }
+
+    private void CreateNewDeck()
+    {
+        for (int i = messengersMessages.Length-1; i>=1; i--)
+        {
+            int j = Random.Range(0, i+1);
+
+            Sprite tmp = messengersMessages[j];
+            messengersMessages[j] = messengersMessages[i];
+            messengersMessages[i] = tmp;
+        }
+    }
+
+    public void CloseTheMessengers()
+    {
+        theMessengers.SetActive(false);
     }
 }

@@ -6,7 +6,7 @@ public class MenuController : MonoBehaviour
 {
     public GameObject playerSelection;
     public Toggle[] toggles;
-    public Toggle goldminesDLCToggle;
+    public Toggle messengersDLCToggle;
     private string save;
     public void GoToPlayerSelection()
     {
@@ -25,9 +25,9 @@ public class MenuController : MonoBehaviour
             else save += "0";
        }
         PlayerPrefs.SetString("Players", save);
-        if (goldminesDLCToggle.isOn) PlayerPrefs.SetInt("goldminesDLC", 1);
-        else PlayerPrefs.SetInt("goldminesDLC", 0);
-        Debug.LogFormat(save + " " + PlayerPrefs.GetInt("goldminesDLC", 0).ToString());
+        if (messengersDLCToggle.isOn) PlayerPrefs.SetInt("messengersDLC", 1);
+        else PlayerPrefs.SetInt("messengersDLC", 0);
+        Debug.LogFormat(save + " " + PlayerPrefs.GetInt("messengersDLC", 0).ToString());
         SceneManager.LoadScene("Gameplay");
     }
 }
