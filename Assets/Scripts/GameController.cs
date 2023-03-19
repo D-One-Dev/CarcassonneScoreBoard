@@ -17,14 +17,18 @@ public class GameController : MonoBehaviour
     public GameObject endConfirm;
     public GameObject theMessengers;
     private bool messengersDLC;
+    private bool countKingRobberDLC;
     public Image messengersSprite;
     public Image messengersMessage;
     private int currentMessage = 0;
+    private int roadsCount, castlesCount;
     void Start()
     {
         string save = PlayerPrefs.GetString("Players", "111111");
         if (PlayerPrefs.GetInt("messengersDLC", 0) == 0) messengersDLC = false;
         else messengersDLC = true;
+        if (PlayerPrefs.GetInt("countKingRobberDLC", 0) == 0) countKingRobberDLC = false;
+        else countKingRobberDLC = true;
 
 
         for (int i = 0; i < save.Length; i++)
@@ -131,13 +135,26 @@ public class GameController : MonoBehaviour
 
     }
 
-    public void SetPlayerScore(int playerID, int score)
+    public void SetPlayerScore(int playerID, int score, int countKingRobber)
     {
         players[playerID].score += score;
         if (players[playerID].score % 5 == 0 && messengersDLC)
         {
             Debug.LogFormat("Trigger " + playerID.ToString());
             TheMessengersTrigger(playerID);
+        }
+        if (countKingRobberDLC)
+        {
+            if (countKingRobber == 0 && score > players[playerID].maxRoad)
+            {
+                roadsCount++;
+                players[playerID].maxRoad = score;
+            }
+            else if (countKingRobber == 1 && score > players[playerID].maxCastle)
+            {
+                castlesCount++;
+                players[playerID].maxCastle = score;
+            }
         }
         UpdateField();
     }
@@ -166,6 +183,7 @@ public class GameController : MonoBehaviour
 
     public void ConfirmEnd()
     {
+        if(countKingRobberDLC)CountKingRobber();
         endConfirm.SetActive(false);
         int cnt = 0;
         int maxScore = 0;
@@ -239,5 +257,29 @@ public class GameController : MonoBehaviour
     public void CloseTheMessengers()
     {
         theMessengers.SetActive(false);
+    }
+
+    private void CountKingRobber()
+    {
+        int maxRoad = 0, maxCastle = 0;
+        int roadWinnerID = 0, castleWinnerID = 0;
+        int cnt = 0;
+        foreach (CPlayer player in players)
+        {
+            if (player.maxRoad > maxRoad)
+            {
+                maxRoad = player.maxRoad;
+                roadWinnerID = cnt;
+            }
+            if (player.maxCastle > maxCastle)
+            {
+                maxCastle = player.maxCastle;
+                castleWinnerID = cnt;
+            }
+            cnt++;
+        }
+
+        if(roadsCount > 0)SetPlayerScore(roadWinnerID, roadsCount, -1);
+        if(castlesCount > 0)SetPlayerScore(castleWinnerID, castlesCount, -1);
     }
 }

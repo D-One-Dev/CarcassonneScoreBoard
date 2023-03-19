@@ -7,6 +7,7 @@ public class MenuController : MonoBehaviour
     public GameObject playerSelection;
     public Toggle[] toggles;
     public Toggle messengersDLCToggle;
+    public Toggle countKingRobberDLCToggle;
     private string save;
     public void GoToPlayerSelection()
     {
@@ -27,7 +28,9 @@ public class MenuController : MonoBehaviour
         PlayerPrefs.SetString("Players", save);
         if (messengersDLCToggle.isOn) PlayerPrefs.SetInt("messengersDLC", 1);
         else PlayerPrefs.SetInt("messengersDLC", 0);
-        Debug.LogFormat(save + " " + PlayerPrefs.GetInt("messengersDLC", 0).ToString());
+        if (countKingRobberDLCToggle.isOn) PlayerPrefs.SetInt("countKingRobberDLC", 1);
+        else PlayerPrefs.SetInt("countKingRobberDLC", 0);
+        Debug.LogFormat(save + " " + PlayerPrefs.GetInt("messengersDLC", 0).ToString() + PlayerPrefs.GetInt("countKingRobberDLC", 0).ToString());
         SceneManager.LoadScene("Gameplay");
     }
 }

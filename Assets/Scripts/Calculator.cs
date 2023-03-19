@@ -7,6 +7,8 @@ public class Calculator : MonoBehaviour
 {
     public GameObject mainCam;
     public GameObject calculator;
+    public Toggle tgglRoad;
+    public Toggle tgglCastle;
     public Image playerSprite;
     public Sprite[] meepleSprites;
     public TMP_Text scoreText;
@@ -19,6 +21,14 @@ public class Calculator : MonoBehaviour
         playerSprite.sprite = meepleSprites[playerID];
         score = "0";
         sign = true;
+        int dlc = PlayerPrefs.GetInt("countKingRobberDLC", 0);
+        if (dlc == 1)
+        {
+            tgglRoad.isOn = false;
+            tgglCastle.isOn = false;
+            tgglRoad.interactable = true;
+            tgglCastle.interactable = true;
+        }
         UpdateCalculator();
         calculator.SetActive(true);
     }
@@ -42,6 +52,22 @@ public class Calculator : MonoBehaviour
         UpdateCalculator();
     }
 
+    public void AddRoad()
+    {
+        if (tgglCastle.isOn && tgglRoad.isOn)
+        {
+            tgglCastle.isOn = false;
+        }
+    }
+
+    public void AddCastle()
+    {
+        if (tgglRoad.isOn && tgglCastle.isOn)
+        {
+            tgglRoad.isOn = false;
+        }
+    }
+
     public void DisableCalculator()
     {
         calculator.SetActive(false);
@@ -49,8 +75,12 @@ public class Calculator : MonoBehaviour
 
     public void SetScore()
     {
-        if (sign == true) mainCam.GetComponent<GameController>().SetPlayerScore(playerID, Int32.Parse(score));
-        else mainCam.GetComponent<GameController>().SetPlayerScore(playerID, -1 * Int32.Parse(score));
+        int countKingRobber;
+        if (tgglRoad.isOn) countKingRobber = 0;
+        else if (tgglCastle.isOn) countKingRobber = 1;
+        else countKingRobber = -1;
+        if (sign == true) mainCam.GetComponent<GameController>().SetPlayerScore(playerID, Int32.Parse(score), countKingRobber);
+        else mainCam.GetComponent<GameController>().SetPlayerScore(playerID, -1 * Int32.Parse(score), countKingRobber);
         DisableCalculator();
     }
 }
